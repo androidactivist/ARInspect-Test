@@ -1,5 +1,8 @@
 package com.example.android.arinspect_test.rest;
 
+import com.example.android.arinspect_test.BuildConfig;
+import com.example.android.arinspect_test.IdlingResources;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -12,16 +15,23 @@ public class ApiClient {
 
     public static Retrofit getClient() {
 
-        OkHttpClient.Builder okhttp = new OkHttpClient.Builder();
+        OkHttpClient client = new OkHttpClient();
+
+        if(BuildConfig.DEBUG) {
+            IdlingResources.registerOkHttp(client);
+        }
+
+
+        //OkHttpClient.Builder okhttp = new OkHttpClient.Builder();
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        okhttp.addInterceptor(loggingInterceptor);
+        //client.addInterceptor(loggingInterceptor);
 
         if (retrofit==null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(FACTS_URL)
                     .addConverterFactory(GsonConverterFactory.create())
-                    .client(okhttp.build())
+                    .client(client)
                     .build();
         }
         return retrofit;

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -52,11 +53,18 @@ public class MainActivity extends AppCompatActivity implements FactsAdapter.Fact
         //Init ViewModel
         mMainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        //Start pull-to-refresh animation
         mSwipeRefreshLayout.setRefreshing(true);
+        refreshFacts();
 
         //load data via ViewModel
-        refreshFacts();
+       /* if(NetworkUtils.isNetworkAvailable(this)) {
+            //Start pull-to-refresh animation
+            mSwipeRefreshLayout.setRefreshing(true);
+            refreshFacts();
+        } else {
+            mErrorTextView.setVisibility(View.VISIBLE);
+        }*/
+
 
         //Pull-to-refresh manually
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -73,11 +81,18 @@ public class MainActivity extends AppCompatActivity implements FactsAdapter.Fact
         mMainViewModel.getAllFacts().observe(this, new Observer<FactsResponse>() {
             @Override
             public void onChanged(@Nullable FactsResponse factsResponses) {
-                List<FactsRows> factsRows = factsResponses.getFactsRowsList();
-                mFactsAdapter = new FactsAdapter(MainActivity.this, factsRows);
-                getSupportActionBar().setTitle(factsResponses.getTitle());
-                mRecyclerView.setAdapter(mFactsAdapter);
-                mSwipeRefreshLayout.setRefreshing(false);
+
+                    if(factsResponses == null) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        mErrorTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        List<FactsRows> factsRows = factsResponses.getFactsRowsList();
+                        mFactsAdapter = new FactsAdapter(MainActivity.this, factsRows);
+                        getSupportActionBar().setTitle(factsResponses.getTitle());
+                        mRecyclerView.setAdapter(mFactsAdapter);
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+
             }
         });
 

@@ -13,7 +13,6 @@ public class FactsResponse implements Parcelable {
     @SerializedName("title")
     private String title;
 
-
     @SerializedName("rows")
     private List<FactsRows> factsRowsList;
 
@@ -33,7 +32,6 @@ public class FactsResponse implements Parcelable {
         this.factsRowsList = factsRowsList;
     }
 
-
     public FactsResponse(Parcel in) {
         this.title = in.readString();
         this.factsRowsList = new ArrayList<FactsRows>();
@@ -47,13 +45,10 @@ public class FactsResponse implements Parcelable {
         dest.writeList(factsRowsList);
     }
 
-
     @Override
     public int describeContents() {
         return 0;
     }
-
-
 
     public static final Parcelable.Creator<FactsResponse> CREATOR = new Parcelable.Creator<FactsResponse>
             () {

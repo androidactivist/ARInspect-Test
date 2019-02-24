@@ -42,14 +42,14 @@ public class MainViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<FactsResponse> call, Throwable t) {
+                mFacts.setValue(null);
                 Log.e(TAG,"Something went wrong while getting facts!");
-                mFacts = null;
 
                 if (t instanceof IOException) {
-                    Log.e(TAG,"this is an actual network failure!");
+                    Log.e(TAG,"This is an actual network failure!");
                 }
                 else {
-                    Log.e(TAG,"conversion issue! big problems!");
+                    Log.e(TAG,"Conversion issue! big problems!");
                 }
             }
         });
