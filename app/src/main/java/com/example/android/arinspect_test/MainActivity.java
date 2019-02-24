@@ -3,6 +3,7 @@ package com.example.android.arinspect_test;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity implements FactsAdapter.Fact
     @BindView(R.id.tv_error_message_display)
     TextView mErrorTextView;
 
-    @BindView(R.id.pb_loading_indicator)
-    ProgressBar mProgressBar;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private FactsAdapter mFactsAdapter;
     private MainViewModel mMainViewModel;
@@ -48,18 +49,35 @@ public class MainActivity extends AppCompatActivity implements FactsAdapter.Fact
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        //Init ViewModel
         mMainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        mProgressBar.setVisibility(View.VISIBLE);
+        //Start pull-to-refresh animation
+        mSwipeRefreshLayout.setRefreshing(true);
 
+        //load data via ViewModel
+        refreshFacts();
+
+        //Pull-to-refresh manually
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshFacts();
+            }
+        });
+
+    }
+
+    private void refreshFacts() {
+        //Observing the changes
         mMainViewModel.getAllFacts().observe(this, new Observer<FactsResponse>() {
             @Override
             public void onChanged(@Nullable FactsResponse factsResponses) {
                 List<FactsRows> factsRows = factsResponses.getFactsRowsList();
                 mFactsAdapter = new FactsAdapter(MainActivity.this, factsRows);
                 getSupportActionBar().setTitle(factsResponses.getTitle());
-                mProgressBar.setVisibility(View.INVISIBLE);
                 mRecyclerView.setAdapter(mFactsAdapter);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
