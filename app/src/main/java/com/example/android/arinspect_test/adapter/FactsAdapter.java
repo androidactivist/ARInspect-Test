@@ -51,11 +51,15 @@ public class FactsAdapter extends RecyclerView.Adapter<FactsAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         FactsRows factsRows = mFacts.get(i);
-        myViewHolder.title.setText(factsRows.getTitle());
-        myViewHolder.desc.setText(factsRows.getDescription());
-        Picasso.get().load(factsRows.getImageHref())
-                .resize(278,185)
-                .into(myViewHolder.image_icon);
+
+        if(factsRows.getTitle() != null) { //If title is null then dont show in list
+            myViewHolder.title.setText(factsRows.getTitle());
+            myViewHolder.desc.setText(factsRows.getDescription());
+            Picasso.get().load(factsRows.getImageHref())
+                    .resize(278, 185)
+                    .into(myViewHolder.image_icon);
+        }
+
 
     }
 
